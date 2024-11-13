@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie</title>
+    <style>
+        @font-face {
+            font-family: 'HugePromo';
+            src: url('fonts/HugePromo.otf') format('opentype');
+        }
+
+        body {
+            font-family: 'HugePromo', sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        #cookie {
+            cursor: pointer;
+            width: 200px;
+            height: 200px;
+            background-image: url('cookie_1.webp');
+            background-size: cover;
+            display: inline-block;
+            margin-bottom: 20px;
+            outline: none;
+            box-shadow: none;
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #cookie:focus, #cookie:active {
+            outline: none;
+            box-shadow: none;
+        }
+
+        #count {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        #achievements {
+            font-size: 18px;
+            margin-top: 30px;
+            color: #FF6347;
+        }
+
+        #achievements h2 {
+            margin-top: 20px;
+            font-size: 24px;
+            color: green; /* 見出しの色を緑に変更 */
+        }
+
+        #achievements ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #achievements li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Eat the Cookie!</h1>
+    <div id="cookie" tabindex="-1"></div>
+    <div id="count">Cookies Eaten: 0</div>
+    <div id="achievements">
+        <h2>Achievements</h2>
+        <ul id="achievements-list">
+            <!-- Achievements will appear here -->
+        </ul>
+    </div>
+
+    <audio id="cookieSound1" src="cookie1.mp3" preload="auto"></audio>
+    <audio id="cookieSound2" src="cookie2.mp3" preload="auto"></audio>
+
+    <script>
+        let count = 0;
+        let biteCount = 0;
+        let cookieSpeed = 0; // Cookies per second
+        const startTime = Date.now();
+
+        const cookieImage = document.getElementById('cookie');
+        const countDisplay = document.getElementById('count');
+        const achievementsList = document.getElementById('achievements-list');
+        const cookieSound1 = document.getElementById('cookieSound1');
+        const cookieSound2 = document.getElementById('cookieSound2');
+
+        let lastCookieTime = Date.now(); // 最初のクッキー食べ始めの時間を記録
+        let currentCookieTime = Date.now(); // 現在のクッキー食べた時間を記録
+
+        // 画像の事前読み込み
+        const cookieImages = [];
+        for (let i = 1; i <= 6; i++) {
+            cookieImages[i] = new Image();
+            cookieImages[i].src = `cookie_${i}.webp`;
+        }
+
+        // アチーブメント追加関数
+        function addAchievement(text) {
+            const li = document.createElement('li');
+            li.textContent = text;
+            achievementsList.appendChild(li);
+        }
+
+        // アチーブメント更新関数
+        function updateAchievements() {
+            // Speed Achievements
+            const timeElapsed = (currentCookieTime - lastCookieTime) / 1000; // seconds
+            if (timeElapsed <= 0.1) {
+                addAchievement("⚡ Flash Cookie! Blink and you missed it!");
+            } else if (timeElapsed <= 0.2) {
+                addAchievement("🔥 Speed King! You’re the ruler of speed!");
+            } else if (timeElapsed <= 0.5) {
+                addAchievement("🦸‍♂️ Super Eater! You’ve got superhuman speed!");
+            } else if (timeElapsed <= 1) {
+                addAchievement("⚡ Speed Demon! You’re eating like a whirlwind!");
+            } else if (timeElapsed <= 1.5) {
+                addAchievement("⏱️ Lightning Fast! You're too quick!");
+            } else if (timeElapsed <= 1.8) {
+                addAchievement("✈️ Fast Eater! You're eating so fast!");
+            }
+
+            // Quantity Achievements
+            if (count >= 10 && count % 10 === 0) {
+                addAchievement(`😋 Ate a whole bag! (${count} cookies)`);
+            }
+            if (count >= 100 && count % 100 === 0) {
+                addAchievement(`📦 Ate a whole box! (${count} cookies)`);
+            }
+            if (count >= 200 && count % 200 === 0) {
+                addAchievement(`💵 You’ve eaten $10 worth! (${count} cookies)`);
+            }
+            if (count >= 40000 && count % 40000 === 0) {
+                addAchievement(`🚗 Bought a car with your cookies! (${count} cookies)`);
+            }
+            if (count >= 600000 && count % 600000 === 0) {
+                addAchievement(`🏠 Bought a house with your cookies! (${count} cookies)`);
+            }
+
+            // Speed Related Achievements
+            if (timeElapsed >= 18) {
+                addAchievement("🐢 Taking it slow! You're enjoying each cookie bite by bite!");
+            }
+        }
+
+        // 1クッキーを食べるのにかかった時間を計測してスピードアチーブメントを表示
+        function checkSpeedAchievements() {
+            currentCookieTime = Date.now(); // 新しいクッキーを食べた時間を記録
+            updateAchievements(); // アチーブメント更新
+            lastCookieTime = currentCookieTime; // 最後のクッキー食べた時間を更新
+        }
+
+        // クッキーを食べるたびに呼び出される関数
+        function eatCookie() {
+            count++;
+            countDisplay.textContent = `Cookies Eaten: ${count}`;
+            checkSpeedAchievements(); // スピードアチーブメントをチェック
+        }
+
+        // クッキー画像クリック時の処理
+        cookieImage.addEventListener('click', (event) => {
+            event.preventDefault();
+            cookieImage.blur();
+
+            // 画像切り替えと噛む回数を処理
+            if (biteCount === 0) {
+                cookieImage.style.backgroundImage = 'url("cookie_2.webp")';
+            }
+
+            biteCount++;
+
+            // 最初のクリックのみcookie1.mp3、以降はcookie2.mp3を再生
+            if (biteCount === 1) {
+                cookieSound1.currentTime = 0;
+                cookieSound1.play();
+            } else {
+                cookieSound2.currentTime = 0;
+                cookieSound2.play();
+            }
+
+            // 噛むたびに画像を更新
+            if (biteCount > 1 && biteCount <= 6) {
+                cookieImage.style.backgroundImage = `url('cookie_${biteCount + 1}.webp')`;
+            }
+
+            // 6回噛んだら1枚食べたとカウント
+            if (biteCount === 6) {
+                eatCookie();
+                biteCount = 0;
+                cookieImage.style.backgroundImage = 'url("cookie_1.webp")';
+            }
+        });
+    </script>
+</body>
+</html>

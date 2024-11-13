@@ -1,0 +1,39 @@
+/* すべての要素に対してタッチ時のハイライトを消す */
+:focus {
+    outline: none !important;
+}
+
+*:focus {
+    outline: none;
+  }
+  a {
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    cursor:pointer;
+  }
+
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+}
+
+#cookie {
+    cursor: pointer;
+    width: 500px; /* クッキーの幅を300pxに変更 */
+    height: 500px; /* クッキーの高さを300pxに変更 */
+    background-image: url('cookie_1.webp');
+    background-size: cover;
+    display: inline-block;
+    margin-bottom: 20px;
+    outline: none;
+    box-shadow: none;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+#count {
+    font-size: 20px;
+    margin-top: 20px;
+}
+
